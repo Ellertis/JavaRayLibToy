@@ -1,5 +1,8 @@
 package jaylib;
 import static com.raylib.Raylib.*;
+
+import java.util.*;
+
 import static com.raylib.Colors.*;
 
 public class Game {
@@ -8,9 +11,12 @@ public class Game {
 		System.out.println(appHomeDir);
 		InitWindow(1280, 720, "Demo");
 		SetTargetFPS(60);
+		float deltaTime = 0.0f;
 		boolean Static = false;
 		float SphereSize = 5.0f;
 		int SphereCount = 1;
+		List<Color> SphereColors = Arrays.asList(GREEN,BLUE,BEIGE,YELLOW,GOLD,WHITE,BLACK,DARKPURPLE);
+		var MainSphereColor = new Color(BLUE);
 		float variance = 0.5f;
 		float max = variance * 1.0f;
 		float min = variance * 1.0f * -1.0f;
@@ -24,6 +30,12 @@ public class Game {
 				.fovy(45).projection(CAMERA_PERSPECTIVE);
 
 		while (!WindowShouldClose()) {
+			deltaTime += GetFrameTime();
+			if (deltaTime >= 1.0f){
+				deltaTime = 0.0f;
+				int rnd = (int)(Math.random() * SphereColors.size());
+				MainSphereColor = SphereColors.get(rnd);
+			}
 			if (IsKeyPressed('P')) Static = !Static; //PauseJitter
 			if (IsKeyPressed('R')) {
 				variance = 0.5f;
@@ -46,11 +58,14 @@ public class Game {
 				testZ = (float)(Math.random() * (max - min) + min);
 				testX = (float)(Math.random() * (max - min) + min);
 			
-			for (i = 0; i < SphereCount; i++){
-				if (i == 0) DrawSphere(new Vector3().x(testX).y(testY).z(testZ), SphereSize, BLUE);
-				else DrawSphere(new Vector3().x((float)(Math.random() * (max - min) + min)).y((float)(Math.random() * (max - min) + min)).z((float)(Math.random() * (max - min) + min)), SphereSize, RED);
+				for (i = 0; i < SphereCount; i++){
+					if (i == 0) DrawSphere(new Vector3().x(testX).y(testY).z(testZ), SphereSize, MainSphereColor);
+					else DrawSphere(new Vector3().x((float)(Math.random() * (max - min) + min)).y((float)(Math.random() * (max - min) + min)).z((float)(Math.random() * (max - min) + min)), SphereSize, RED);
 				}
 			}
+			else {DrawSphere(new Vector3().x(testX).y(testY).z(testZ), SphereSize, MainSphereColor);
+			}
+			
 			EndMode3D();
 			DrawText("Hello world", 40, 40, 10, VIOLET);
 			DrawText("Static : "+String.valueOf(Static),20,50,20,RED);
